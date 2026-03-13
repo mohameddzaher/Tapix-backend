@@ -8,7 +8,7 @@
     "build": "cd packages/shared && npm install && npm run build && cd ../.. && tsc",
     "start": "node dist/index.js",
     "seed": "tsx src/scripts/seed.ts",
-    "postinstall": "cd packages/shared && npm install && npm run build"
+    "postinstall": "cd packages/shared && npm install && npm run build && cd ../.. && tsc"
   },
   "dependencies": {
     "@tapix/shared": "file:./packages/shared",
