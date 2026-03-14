@@ -71,7 +71,7 @@ app.use(cookieParser());
 app.use(sanitize);
 
 // Compression
-app.use(compression());
+app.use(compression() as any);
 
 // Logging
 if (config.isDev) {
