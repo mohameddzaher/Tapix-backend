@@ -162,11 +162,16 @@ export const validatePasswordStrength = (password: string): { valid: boolean; me
 };
 
 // Get cookie options for refresh token
-export const getRefreshTokenCookieOptions = () => ({
-  httpOnly: true,
-  secure: config.cookie.secure,
-  sameSite: config.cookie.sameSite as 'strict' | 'lax' | 'none',
-  domain: config.cookie.domain,
-  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-  path: '/api/v1/auth',
-});
+export const getRefreshTokenCookieOptions = () => {
+  const options: Record<string, any> = {
+    httpOnly: true,
+    secure: config.cookie.secure,
+    sameSite: config.cookie.sameSite as 'strict' | 'lax' | 'none',
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    path: '/',
+  };
+  if (config.cookie.domain) {
+    options.domain = config.cookie.domain;
+  }
+  return options;
+};

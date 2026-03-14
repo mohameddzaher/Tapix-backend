@@ -28,7 +28,7 @@ export const config = {
 
   // Cookies
   cookie: {
-    domain: process.env.COOKIE_DOMAIN || 'localhost',
+    domain: process.env.COOKIE_DOMAIN || undefined,
     secure: process.env.COOKIE_SECURE === 'true',
     sameSite: (process.env.COOKIE_SAME_SITE as 'strict' | 'lax' | 'none') || 'lax',
   },
