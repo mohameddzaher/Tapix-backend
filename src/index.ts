@@ -2,42 +2,43 @@
 // Tapix API - Main Entry Point
 // ============================================
 
-import express, { Express, Request, Response } from 'express';
-import cors from 'cors';
-import helmet from 'helmet';
-import morgan from 'morgan';
-import compression from 'compression';
-import cookieParser from 'cookie-parser';
-import rateLimit from 'express-rate-limit';
-import path from 'path';
+import express, { Express, Request, Response } from "express";
+import cors from "cors";
+import helmet from "helmet";
+import morgan from "morgan";
+import compression from "compression";
+import cookieParser from "cookie-parser";
+import rateLimit from "express-rate-limit";
+import path from "path";
 
-import { config, validateConfig } from './config';
-import { connectDatabase } from './config/database';
-import { errorHandler, notFoundHandler } from './middleware/errorHandler';
-import { sanitize } from './middleware/validate';
+import { config, validateConfig } from "./config";
+import { connectDatabase } from "./config/database";
+import { errorHandler, notFoundHandler } from "./middleware/errorHandler";
+import { sanitize } from "./middleware/validate";
 
 // Import routes
-import authRoutes from './routes/auth.routes';
-import productsRoutes from './routes/products.routes';
-import categoriesRoutes from './routes/categories.routes';
-import cartRoutes from './routes/cart.routes';
-import ordersRoutes from './routes/orders.routes';
-import reviewsRoutes from './routes/reviews.routes';
-import usersRoutes from './routes/users.routes';
-import adminRoutes from './routes/admin.routes';
-import notificationsRoutes from './routes/notifications.routes';
-import offersRoutes from './routes/offers.routes';
-import bannersRoutes from './routes/banners.routes';
-import cmsRoutes from './routes/cms.routes';
-import blogRoutes from './routes/blog.routes';
-import testimonialsRoutes from './routes/testimonials.routes';
-import referralsRoutes from './routes/referrals.routes';
-import brandsRoutes from './routes/brands.routes';
-import loyaltyRoutes from './routes/loyalty.routes';
-import settingsRoutes from './routes/settings.routes';
-import inventoryRoutes from './routes/inventory.routes';
-import accountingRoutes from './routes/accounting.routes';
-import seoRoutes from './routes/seo.routes';
+import authRoutes from "./routes/auth.routes";
+import productsRoutes from "./routes/products.routes";
+import categoriesRoutes from "./routes/categories.routes";
+import cartRoutes from "./routes/cart.routes";
+import ordersRoutes from "./routes/orders.routes";
+import reviewsRoutes from "./routes/reviews.routes";
+import usersRoutes from "./routes/users.routes";
+import adminRoutes from "./routes/admin.routes";
+import notificationsRoutes from "./routes/notifications.routes";
+import offersRoutes from "./routes/offers.routes";
+import bannersRoutes from "./routes/banners.routes";
+import cmsRoutes from "./routes/cms.routes";
+import blogRoutes from "./routes/blog.routes";
+import testimonialsRoutes from "./routes/testimonials.routes";
+import referralsRoutes from "./routes/referrals.routes";
+import brandsRoutes from "./routes/brands.routes";
+import loyaltyRoutes from "./routes/loyalty.routes";
+import settingsRoutes from "./routes/settings.routes";
+import inventoryRoutes from "./routes/inventory.routes";
+import accountingRoutes from "./routes/accounting.routes";
+import seoRoutes from "./routes/seo.routes";
+import b2bRoutes from "./routes/b2b.routes";
 
 // Validate configuration
 validateConfig();
@@ -46,38 +47,42 @@ validateConfig();
 const app: Express = express();
 
 // Trust proxy (for rate limiting behind reverse proxy)
-app.set('trust proxy', 1);
+app.set("trust proxy", 1);
 
 // Security middleware
-app.use(helmet({
-  crossOriginResourcePolicy: { policy: 'cross-origin' },
-  contentSecurityPolicy: config.isDev ? false : undefined,
-}));
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+    contentSecurityPolicy: config.isDev ? false : undefined,
+  }),
+);
 
 // CORS configuration
-app.use(cors({
-  origin: config.cors.origin,
-  credentials: config.cors.credentials,
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-}));
+app.use(
+  cors({
+    origin: config.cors.origin,
+    credentials: config.cors.credentials,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+  }),
+);
 
 // Request parsing
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(cookieParser());
 
 // Input sanitization
 app.use(sanitize);
 
 // Compression
-app.use(compression() as any);
+app.use(compression());
 
 // Logging
 if (config.isDev) {
-  app.use(morgan('dev'));
+  app.use(morgan("dev"));
 } else {
-  app.use(morgan('combined'));
+  app.use(morgan("combined"));
 }
 
 // Rate limiting
@@ -86,23 +91,23 @@ const limiter = rateLimit({
   max: config.rateLimit.max,
   message: {
     success: false,
-    error: 'Too many requests, please try again later.',
+    error: "Too many requests, please try again later.",
   },
   standardHeaders: true,
   legacyHeaders: false,
 });
 
 // Apply rate limiting to API routes
-app.use('/api', limiter);
+app.use("/api", limiter);
 
 // Static files for uploads
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 // Health check endpoint
-app.get('/health', (_req: Request, res: Response) => {
+app.get("/health", (_req: Request, res: Response) => {
   res.json({
     success: true,
-    status: 'healthy',
+    status: "healthy",
     timestamp: new Date().toISOString(),
     environment: config.env,
   });
@@ -132,12 +137,13 @@ app.use(`${API_PREFIX}/settings`, settingsRoutes);
 app.use(`${API_PREFIX}/admin/inventory`, inventoryRoutes);
 app.use(`${API_PREFIX}/admin/accounting`, accountingRoutes);
 app.use(`${API_PREFIX}/admin/seo`, seoRoutes);
+app.use(`${API_PREFIX}/admin/b2b`, b2bRoutes);
 
 // API info endpoint
 app.get(`${API_PREFIX}`, (_req: Request, res: Response) => {
   res.json({
     success: true,
-    message: 'Tapix API',
+    message: "Tapix API",
     version: config.apiVersion,
     environment: config.env,
     endpoints: {
@@ -188,31 +194,31 @@ const startServer = async (): Promise<void> => {
       `);
     });
   } catch (error) {
-    console.error('❌ Failed to start server:', error);
+    console.error("❌ Failed to start server:", error);
     process.exit(1);
   }
 };
 
 // Handle uncaught exceptions
-process.on('uncaughtException', (error: Error) => {
-  console.error('Uncaught Exception:', error);
+process.on("uncaughtException", (error: Error) => {
+  console.error("Uncaught Exception:", error);
   process.exit(1);
 });
 
 // Handle unhandled promise rejections
-process.on('unhandledRejection', (reason: unknown) => {
-  console.error('Unhandled Rejection:', reason);
+process.on("unhandledRejection", (reason: unknown) => {
+  console.error("Unhandled Rejection:", reason);
   process.exit(1);
 });
 
 // Handle graceful shutdown
-process.on('SIGTERM', () => {
-  console.log('SIGTERM received. Shutting down gracefully...');
+process.on("SIGTERM", () => {
+  console.log("SIGTERM received. Shutting down gracefully...");
   process.exit(0);
 });
 
-process.on('SIGINT', () => {
-  console.log('SIGINT received. Shutting down gracefully...');
+process.on("SIGINT", () => {
+  console.log("SIGINT received. Shutting down gracefully...");
   process.exit(0);
 });
 

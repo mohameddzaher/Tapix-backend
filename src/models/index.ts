@@ -20,3 +20,8 @@ export * from './Testimonial';
 export * from './Brand';
 export * from './Settings';
 export * from './Referral';
+export * from './B2BProduct';
+export * from './B2BSupplier';
+export * from './B2BClient';
+export * from './B2BSale';
+export * from './B2BExpense';

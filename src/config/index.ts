@@ -10,7 +10,7 @@ dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 export const config = {
   // Server
   env: process.env.NODE_ENV || 'development',
-  port: parseInt(process.env.PORT || '5000', 10),
+  port: parseInt(process.env.PORT || '5001', 10),
   apiVersion: process.env.API_VERSION || 'v1',
   isDev: process.env.NODE_ENV === 'development',
   isProd: process.env.NODE_ENV === 'production',
@@ -28,16 +28,14 @@ export const config = {
 
   // Cookies
   cookie: {
-    domain: process.env.COOKIE_DOMAIN || undefined,
+    domain: process.env.COOKIE_DOMAIN || 'localhost',
     secure: process.env.COOKIE_SECURE === 'true',
     sameSite: (process.env.COOKIE_SAME_SITE as 'strict' | 'lax' | 'none') || 'lax',
   },
 
   // CORS
   cors: {
-    origin: process.env.CORS_ORIGIN?.includes(',')
-      ? process.env.CORS_ORIGIN.split(',').map(o => o.trim())
-      : process.env.CORS_ORIGIN || 'http://localhost:3000',
+    origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
     credentials: true,
   },
 
