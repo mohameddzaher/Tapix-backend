@@ -163,15 +163,20 @@ export const validatePasswordStrength = (password: string): { valid: boolean; me
 
 // Get cookie options for refresh token
 export const getRefreshTokenCookieOptions = () => {
+  const isProduction = config.isProd || config.cookie.secure;
+
   const options: Record<string, any> = {
     httpOnly: true,
-    secure: config.cookie.secure,
-    sameSite: config.cookie.sameSite as 'strict' | 'lax' | 'none',
+    secure: isProduction,
+    sameSite: isProduction ? 'none' as const : 'lax' as const,
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     path: '/',
   };
-  if (config.cookie.domain) {
+
+  // Only set domain in production with a real domain (not localhost)
+  if (config.cookie.domain && config.cookie.domain !== 'localhost') {
     options.domain = config.cookie.domain;
   }
+
   return options;
 };
