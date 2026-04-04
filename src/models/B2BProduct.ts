@@ -93,8 +93,14 @@ const b2bProductSchema = new Schema<IB2BProduct>(
   }
 );
 
-// Auto-calculate totalCost if not provided
-b2bProductSchema.pre('save', function (next) {
+// Auto-generate SKU code (TPX-XXX) if not provided
+b2bProductSchema.pre('save', async function (next) {
+  if (this.isNew && !this.sku) {
+    const count = await mongoose.model('B2BProduct').countDocuments();
+    this.sku = `TPX-${String(count + 1).padStart(3, '0')}`;
+  }
+
+  // Auto-calculate totalCost
   if (!this.totalCost || this.isModified('costPerUnit') || this.isModified('quantity')) {
     this.totalCost = this.costPerUnit * this.quantity;
   }
