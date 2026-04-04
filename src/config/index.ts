@@ -33,9 +33,11 @@ export const config = {
     sameSite: (process.env.COOKIE_SAME_SITE as 'strict' | 'lax' | 'none') || 'lax',
   },
 
-  // CORS
+  // CORS - support multiple origins as comma-separated string
   cors: {
-    origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+    origin: (process.env.CORS_ORIGIN || 'http://localhost:3000').includes(',')
+      ? (process.env.CORS_ORIGIN || '').split(',').map(o => o.trim())
+      : process.env.CORS_ORIGIN || 'http://localhost:3000',
     credentials: true,
   },
 
